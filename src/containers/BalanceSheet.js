@@ -2,7 +2,7 @@ import * as React from "react";
 import PropTypes from "prop-types";
 import { BalanceSheetGroup } from "../components/balance-sheet/BalanceSheetGroup";
 import { BalanceSheetValue } from "../components/balance-sheet/BalanceSheetValue";
-import { Typography, InputAdornment, TextField, withStyles } from "@material-ui/core";
+import { Typography, InputAdornment, TextField, Button, withStyles } from "@material-ui/core";
 import Cookies from "js-cookie";
 
 const styles = theme => ({
@@ -25,14 +25,6 @@ const styles = theme => ({
     }
 });
 
-// interface Props {
-//     cached?: any;
-// }
-
-// interface State {
-//     balanceSheet: ValueGroup[];
-// }
-
 class BalanceSheet extends React.Component {
 
     static propTypes = {
@@ -44,49 +36,51 @@ class BalanceSheet extends React.Component {
 
         const previousStateString = Cookies.get("balance-sheet");
 
-        const previousState = previousStateString ?
-            JSON.parse(previousStateString) :
-            [{
-                id: 1,
-                title: "Incomes",
-                values: [{
-                    id: 1,
-                    title: "Maintenance Loan",
-                    value: 0,
-                    period: "Yearly",
-                    type: "Income"
-                }]
-            }, {
-                id: 2,
-                title: "Life",
-                values: [{
-                    id: 2,
-                    title: "Rent",
-                    value: 0,
-                    period: "Yearly",
-                    type: "Expense"
-                }, {
-                    id: 3,
-                    title: "Food",
-                    value: 0,
-                    period: "Weekly",
-                    type: "Expense"
-                }]
-            }, {
-                id: 3,
-                title: "Bills",
-                values: [{
-                    id: 4,
-                    title: "Streaming Services",
-                    value: 0,
-                    period: "Monthly",
-                    type: "Expense"
-                }]
-            }];
+        const previousState = previousStateString ? JSON.parse(previousStateString) : this.getStartingBalanceSheet();
 
         this.state = {
             balanceSheet: previousState
         };
+    }
+
+    getStartingBalanceSheet = () => {
+        return [{
+            id: 1,
+            title: "Incomes",
+            values: [{
+                id: 1,
+                title: "Maintenance Loan",
+                value: 0,
+                period: "Yearly",
+                type: "Income"
+            }]
+        }, {
+            id: 2,
+            title: "Life",
+            values: [{
+                id: 2,
+                title: "Rent",
+                value: 0,
+                period: "Yearly",
+                type: "Expense"
+            }, {
+                id: 3,
+                title: "Food",
+                value: 0,
+                period: "Weekly",
+                type: "Expense"
+            }]
+        }, {
+            id: 3,
+            title: "Bills",
+            values: [{
+                id: 4,
+                title: "Streaming Services",
+                value: 0,
+                period: "Monthly",
+                type: "Expense"
+            }]
+        }];
     }
 
     handleValueChange = (updatedValue, groupId) => {
@@ -140,6 +134,10 @@ class BalanceSheet extends React.Component {
         }
 
         this.updateState(valueGroups);
+    }
+
+    handleClear = () => {
+        this.updateState(this.getStartingBalanceSheet());
     }
 
     updateState = (balanceSheets) => {
@@ -196,8 +194,9 @@ class BalanceSheet extends React.Component {
         const weeklyAvailable = this.calculateWeeklyAvailable();
 
         return (
-            <div className={classes.root }>
+            <div className={classes.root}>
                 <Typography variant="h2" gutterBottom>Income and Expenditure</Typography>
+                <Button variant="contained" color="primary" onClick={this.handleClear}>Clear Form</Button>
                 {
                     balanceSheet.map((valueGroup, index) => {
                         const {

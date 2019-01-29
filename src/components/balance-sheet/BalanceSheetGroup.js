@@ -1,13 +1,14 @@
 import * as React from "react";
+import PropTypes from "prop-types";
 import { Button, Typography, List } from "@material-ui/core";
 
-// interface Props {
-//     id: number;
-//     title: string;
-//     onAdd: (groupId: number, type: ValueType) => void;
-// }
-
 export class BalanceSheetGroup extends React.Component {
+
+    static propTypes = {
+        id: PropTypes.number.isRequired,
+        title: PropTypes.string.isRequired,
+        onAdd: PropTypes.func.isRequired,
+    };
 
     render() {
         const {

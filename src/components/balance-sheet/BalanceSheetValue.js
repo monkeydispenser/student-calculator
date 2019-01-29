@@ -1,4 +1,5 @@
 import * as React from "react";
+import PropTypes from "prop-types";
 import { Input, Select, MenuItem, ListItem, InputAdornment, TextField, Fab, Icon, withStyles } from "@material-ui/core";
 
 const styles = ({ spacing }) => ({
@@ -52,6 +53,12 @@ const styles = ({ spacing }) => ({
 
 export const BalanceSheetValue = withStyles(styles)(
     class extends React.Component {
+
+        static propTypes = {
+            groupId: PropTypes.number.isRequired,
+            onChange: PropTypes.func.isRequired,
+            onDelete: PropTypes.func.isRequired,
+        };
 
         handleChange = (event) => {
             const {
@@ -136,7 +143,7 @@ export const BalanceSheetValue = withStyles(styles)(
                                     style: { textAlign: "right" },
                                 }
                             }}
-                                onChange={this.handleChange} />
+                            onChange={this.handleChange} />
                     </div>
                     <Select
                         className={classes.period}
