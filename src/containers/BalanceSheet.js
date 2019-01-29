@@ -1,12 +1,11 @@
 import * as React from "react";
+import PropTypes from "prop-types";
 import { BalanceSheetGroup } from "../components/balance-sheet/BalanceSheetGroup";
 import { BalanceSheetValue } from "../components/balance-sheet/BalanceSheetValue";
-import { ValueGroup, ValueItem, Period, ValueType } from "../@types/IBalanceSheet";
-import { Input, Typography, withStyles, InputAdornment, TextField } from "@material-ui/core";
-import green from "@material-ui/core/colors/green";
+import { Typography, InputAdornment, TextField, withStyles } from "@material-ui/core";
 import Cookies from "js-cookie";
 
-const styles: any = (theme: any) => ({
+const styles = theme => ({
     root: {
         padding: theme.spacing.unit,
         [theme.breakpoints.down("sm")]: {
@@ -26,18 +25,21 @@ const styles: any = (theme: any) => ({
     }
 });
 
-interface Props {
-    cached?: any;
-    classes: any;
-}
+// interface Props {
+//     cached?: any;
+// }
 
-interface State {
-    balanceSheet: ValueGroup[];
-}
+// interface State {
+//     balanceSheet: ValueGroup[];
+// }
 
-class BalanceSheet extends React.Component<Props, State> {
+class BalanceSheet extends React.Component {
 
-    constructor(props: Props) {
+    static propTypes = {
+        classes: PropTypes.object.isRequired,
+    };
+
+    constructor(props) {
         super(props);
 
         const previousStateString = Cookies.get("balance-sheet");
@@ -51,8 +53,8 @@ class BalanceSheet extends React.Component<Props, State> {
                     id: 1,
                     title: "Maintenance Loan",
                     value: 0,
-                    period: Period.Yearly,
-                    type: ValueType.Income
+                    period: "Yearly",
+                    type: "Income"
                 }]
             }, {
                 id: 2,
@@ -61,14 +63,14 @@ class BalanceSheet extends React.Component<Props, State> {
                     id: 2,
                     title: "Rent",
                     value: 0,
-                    period: Period.Yearly,
-                    type: ValueType.Expense
+                    period: "Yearly",
+                    type: "Expense"
                 }, {
                     id: 3,
                     title: "Food",
                     value: 0,
-                    period: Period.Weekly,
-                    type: ValueType.Expense
+                    period: "Weekly",
+                    type: "Expense"
                 }]
             }, {
                 id: 3,
@@ -77,8 +79,8 @@ class BalanceSheet extends React.Component<Props, State> {
                     id: 4,
                     title: "Streaming Services",
                     value: 0,
-                    period: Period.Monthly,
-                    type: ValueType.Expense
+                    period: "Monthly",
+                    type: "Expense"
                 }]
             }];
 
@@ -87,7 +89,7 @@ class BalanceSheet extends React.Component<Props, State> {
         };
     }
 
-    private handleValueChange = (updatedValue: ValueItem, groupId: number) => {
+    handleValueChange = (updatedValue, groupId) => {
         const valueGroups = [...this.state.balanceSheet];
 
         const groupIndex = valueGroups.findIndex((x) => x.id === groupId);
@@ -103,28 +105,28 @@ class BalanceSheet extends React.Component<Props, State> {
         this.updateState(valueGroups);
     }
 
-    private handleAddValue = (groupId: number, type: ValueType) => {
+    handleAddValue = (groupId, type) => {
         const valueGroups = [...this.state.balanceSheet];
 
         const groupIndex = valueGroups.findIndex((x) => x.id === groupId);
         const group = valueGroups[groupIndex];
 
-        const currentIds = valueGroups.flatMap((valueGroup: ValueGroup) => {
-            return valueGroup.values.map((value: ValueItem) => value.id);
+        const currentIds = valueGroups.flatMap((valueGroup) => {
+            return valueGroup.values.map((value) => value.id);
         });
 
         group.values.push({
             id: Math.max(...currentIds) + 1,
-            title: type === ValueType.Income ? "New Income" : "New Expense",
+            title: type === "Income" ? "New Income" : "New Expense",
             value: 0,
-            period: Period.Weekly,
+            period: "Weekly",
             type
         });
 
         this.updateState(valueGroups);
     }
 
-    private handleDeleteValue = (id: number, groupId: number) => {
+    handleDeleteValue = (id, groupId) => {
         const valueGroups = [...this.state.balanceSheet];
 
         const groupIndex = valueGroups.findIndex((x) => x.id === groupId);
@@ -140,7 +142,7 @@ class BalanceSheet extends React.Component<Props, State> {
         this.updateState(valueGroups);
     }
 
-    private updateState = (balanceSheets: ValueGroup[]) => {
+    updateState = (balanceSheets) => {
         Cookies.set("balance-sheet", JSON.stringify(balanceSheets));
 
         this.setState({
@@ -148,31 +150,31 @@ class BalanceSheet extends React.Component<Props, State> {
         });
     }
 
-    private calculateWeeklyAvailable = () => {
-        let weeklyAvailable: number = 0;
+    calculateWeeklyAvailable = () => {
+        let weeklyAvailable = 0;
 
         const balanceSheets = [...this.state.balanceSheet];
 
         for (const balanceSheet of balanceSheets) {
             for (const value of balanceSheet.values) {
-                let weeklyValue: number = 0;
+                let weeklyValue = 0;
                 switch (value.period) {
-                    case Period.Yearly:
+                    case "Yearly":
                         weeklyValue = value.value / 52;
                         break;
-                    case Period.Monthly:
+                    case "Monthly":
                         weeklyValue = (value.value * 12) / 52;
                         break;
-                    case Period.Weekly:
+                    default:    // "Weekly"
                         weeklyValue = value.value;
                         break;
                 }
 
                 switch (value.type) {
-                    case ValueType.Income:
+                    case "Income":
                         weeklyAvailable = weeklyAvailable + weeklyValue;
                         break;
-                    case ValueType.Expense:
+                    default:    // "Expense"
                         weeklyAvailable = weeklyAvailable - weeklyValue;
                         break;
                 }
@@ -182,7 +184,7 @@ class BalanceSheet extends React.Component<Props, State> {
         return weeklyAvailable;
     }
 
-    public render() {
+    render() {
         const {
             balanceSheet
         } = this.state;
@@ -194,10 +196,10 @@ class BalanceSheet extends React.Component<Props, State> {
         const weeklyAvailable = this.calculateWeeklyAvailable();
 
         return (
-            <div className={classes.root}>
+            <div className={classes.root }>
                 <Typography variant="h2" gutterBottom>Income and Expenditure</Typography>
                 {
-                    balanceSheet.map((valueGroup: ValueGroup, index: number) => {
+                    balanceSheet.map((valueGroup, index) => {
                         const {
                             values,
                             ...rest
@@ -205,7 +207,7 @@ class BalanceSheet extends React.Component<Props, State> {
 
                         return <BalanceSheetGroup key={index} {...rest} onAdd={this.handleAddValue}>
                             {
-                                values.map((value: ValueItem, subIndex: number) => (
+                                values.map((value, subIndex) => (
                                     <BalanceSheetValue key={subIndex} groupId={valueGroup.id} {...value} onChange={this.handleValueChange} onDelete={this.handleDeleteValue} />
                                 ))
                             }
@@ -218,13 +220,13 @@ class BalanceSheet extends React.Component<Props, State> {
                     <TextField
                         type="number"
                         value={weeklyAvailable.toFixed(2)}
-                        inputProps={{
-                            style: { textAlign: "right" },
-                        }}
                         InputProps={{
                             startAdornment: <InputAdornment position="start">£</InputAdornment>,
+                            inputProps: {
+                                style: { textAlign: "right" },
+                            }
                         }}
-                        variant="filled"/>
+                        variant="filled" />
                 </div>
             </div>
         );

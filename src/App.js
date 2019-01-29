@@ -4,7 +4,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import BalanceSheet from "./containers/BalanceSheet";
 
 export default class App extends React.Component {
-    public render() {
+    render() {
         return (
             <>
                 <CssBaseline />
