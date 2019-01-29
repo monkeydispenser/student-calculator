@@ -90,7 +90,7 @@ export const BalanceSheetValue = withStyles(styles)(
                     newValue.value = Number(targetValue);
                     break;
                 case "period":
-                    newValue.period = Number(targetValue);
+                    newValue.period = targetValue;
                     break;
                 default:
                     // Could not identify property changed
