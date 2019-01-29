@@ -1,0 +1,22 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "interface-name": false,
+        "object-literal-sort-keys": false,
+        "no-console": false,
+        "max-classes-per-file": false,
+        "ordered-imports": false,
+        "typedef": [true, "parameter", "member-variable-declaration"],
+        "member-ordering": [false],
+        "max-line-length": [true, 180],
+        "no-string-literal": false,
+        "no-shadowed-variable": false,
+        "trailing-comma": [true, {"multiline": "ignore", "singleline": "never", "esSpecCompliant": true}]
+    },
+    "rulesDirectory": [],
+    "linterOptions": { "exclude": ["./src/@types/**/*.ts", "./node_modules/", "./storybook"] }
+}
