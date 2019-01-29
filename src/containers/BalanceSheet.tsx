@@ -2,18 +2,40 @@ import * as React from "react";
 import { BalanceSheetGroup } from "../components/balance-sheet/BalanceSheetGroup";
 import { BalanceSheetValue } from "../components/balance-sheet/BalanceSheetValue";
 import { ValueGroup, ValueItem, Period, ValueType } from "../@types/IBalanceSheet";
-import { Input } from "@material-ui/core";
+import { Input, Typography, withStyles, InputAdornment, TextField } from "@material-ui/core";
+import green from "@material-ui/core/colors/green";
 import Cookies from "js-cookie";
+
+const styles: any = (theme: any) => ({
+    root: {
+        padding: theme.spacing.unit,
+        [theme.breakpoints.down("sm")]: {
+            width: theme.breakpoints.values.sm
+        },
+        [theme.breakpoints.up("md")]: {
+            width: theme.breakpoints.values.md
+        },
+        [theme.breakpoints.up("lg")]: {
+            width: theme.breakpoints.values.lg
+        },
+    },
+    result: {
+        width: "70%",
+        display: "flex",
+        justifyContent: "flex-end"
+    }
+});
 
 interface Props {
     cached?: any;
+    classes: any;
 }
 
 interface State {
     balanceSheet: ValueGroup[];
 }
 
-export default class BalanceSheet extends React.Component<Props, State> {
+class BalanceSheet extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
@@ -37,6 +59,12 @@ export default class BalanceSheet extends React.Component<Props, State> {
                 title: "Life",
                 values: [{
                     id: 2,
+                    title: "Rent",
+                    value: 0,
+                    period: Period.Yearly,
+                    type: ValueType.Expense
+                }, {
+                    id: 3,
                     title: "Food",
                     value: 0,
                     period: Period.Weekly,
@@ -46,7 +74,7 @@ export default class BalanceSheet extends React.Component<Props, State> {
                 id: 3,
                 title: "Bills",
                 values: [{
-                    id: 3,
+                    id: 4,
                     title: "Streaming Services",
                     value: 0,
                     period: Period.Monthly,
@@ -92,6 +120,22 @@ export default class BalanceSheet extends React.Component<Props, State> {
             period: Period.Weekly,
             type
         });
+
+        this.updateState(valueGroups);
+    }
+
+    private handleDeleteValue = (id: number, groupId: number) => {
+        const valueGroups = [...this.state.balanceSheet];
+
+        const groupIndex = valueGroups.findIndex((x) => x.id === groupId);
+        const group = valueGroups[groupIndex];
+        const values = [...group.values];
+
+        const existingValueIndex = values.findIndex((x) => x.id === id);
+        if (existingValueIndex > -1) {
+            values.splice(existingValueIndex, 1);
+            group.values = values;
+        }
 
         this.updateState(valueGroups);
     }
@@ -143,11 +187,15 @@ export default class BalanceSheet extends React.Component<Props, State> {
             balanceSheet
         } = this.state;
 
+        const {
+            classes
+        } = this.props;
+
         const weeklyAvailable = this.calculateWeeklyAvailable();
 
         return (
-            <>
-                <h2>Income and Expenditure</h2>
+            <div className={classes.root}>
+                <Typography variant="h2" gutterBottom>Income and Expenditure</Typography>
                 {
                     balanceSheet.map((valueGroup: ValueGroup, index: number) => {
                         const {
@@ -158,15 +206,29 @@ export default class BalanceSheet extends React.Component<Props, State> {
                         return <BalanceSheetGroup key={index} {...rest} onAdd={this.handleAddValue}>
                             {
                                 values.map((value: ValueItem, subIndex: number) => (
-                                    <BalanceSheetValue key={subIndex} groupId={valueGroup.id} {...value} onChange={this.handleValueChange} />
+                                    <BalanceSheetValue key={subIndex} groupId={valueGroup.id} {...value} onChange={this.handleValueChange} onDelete={this.handleDeleteValue} />
                                 ))
                             }
                         </BalanceSheetGroup>;
                     })
                 }
-                <h3>Available Weekly Cash</h3>
-                <Input value={weeklyAvailable} />
-            </>
+                <Typography variant="h3" gutterBottom>Available Weekly Cash</Typography>
+                <div
+                    className={classes.result}>
+                    <TextField
+                        type="number"
+                        value={weeklyAvailable.toFixed(2)}
+                        inputProps={{
+                            style: { textAlign: "right" },
+                        }}
+                        InputProps={{
+                            startAdornment: <InputAdornment position="start">£</InputAdornment>,
+                        }}
+                        variant="filled"/>
+                </div>
+            </div>
         );
     }
 }
+
+export default withStyles(styles)(BalanceSheet);

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button } from "@material-ui/core";
+import { Button, Typography, List } from "@material-ui/core";
 import { ValueType } from "../../@types/IBalanceSheet";
 
 interface Props {
@@ -19,12 +19,12 @@ export class BalanceSheetGroup extends React.Component<Props> {
 
         return (
             <>
-                <h2>{title}</h2>
+                <Typography variant="h3" gutterBottom>{title}</Typography>
                 <Button onClick={() => { this.props.onAdd(id, ValueType.Income); }}>Add Income</Button>
                 <Button onClick={() => { this.props.onAdd(id, ValueType.Expense); }}>Add Expense</Button>
-                <ul>
+                <List>
                     {children}
-                </ul>
+                </List>
             </>
         );
     }
