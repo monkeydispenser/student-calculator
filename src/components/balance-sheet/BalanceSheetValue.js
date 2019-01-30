@@ -45,12 +45,6 @@ const styles = ({ spacing }) => ({
     }
 });
 
-// interface Props extends WithStyles<typeof styles>, ValueItem {
-//     groupId: number;
-//     onChange: (newValue: ValueItem, groupId: number) => void;
-//     onDelete: (id: number, groupId: number) => void;
-// }
-
 export const BalanceSheetValue = withStyles(styles)(
     class extends React.Component {
 
